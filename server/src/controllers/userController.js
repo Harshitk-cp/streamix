@@ -8,6 +8,9 @@ import { LOG_LEVEL } from "../utils/enums.js";
 import Logger from "../logger.js";
 Logger.setLevel(LOG_LEVEL.DEBUG);
 
+/**
+ * @description POST /users/signup
+ */
 export const register = asyncHandler(async (req, res) => {
   const { userName, password, email, profile } = req.body;
   const emailExists = await User.exists({ email: email });
@@ -37,6 +40,9 @@ export const register = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @description POST /users/login
+ */
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -62,6 +68,9 @@ export const login = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @description GET /users/:userId
+ */
 export const getUser = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
   const user = await User.findById(userId).select("-password");
