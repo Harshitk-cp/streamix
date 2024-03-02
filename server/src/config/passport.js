@@ -27,7 +27,7 @@ export default function configurePassport(passport) {
 
   passport.use(
     new JwtStrategy(opts, (payload, done) => {
-      User.findById(payload._id)
+      User.findById(payload.id)
         .select("-password")
         .then((user) => {
           if (user) {

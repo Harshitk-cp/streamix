@@ -18,7 +18,7 @@ export const getRoom = asyncHandler(async (req, res) => {
     .exec();
 
   if (rooms) {
-    return res.status(200).json(rooms);
+    return res.status(200).json({ success: true, rooms: rooms });
   } else {
     return res.status(404).json({ error: "No Rooms Found" });
   }
@@ -28,17 +28,12 @@ export const getRoom = asyncHandler(async (req, res) => {
  * @description GET /room/:room_id
  */
 export const getRoomFromId = asyncHandler(async (req, res) => {
-  const room = await Room.findById(req.params.room_id)
-    .populate("user", ["username", "social", "image", "handle"])
-    .populate("users.lookup", ["username", "social", "image", "handle"])
-    .exec();
+  const room = await Room.findById(req.params.room_id);
 
   if (room) {
-    return res.status(200).json(room);
+    return res.status(200).json({ success: true, room: room });
   } else {
-    return res
-      .status(404)
-      .json({ error: `No room with name ${req.params.room_name} found` });
+    return res.status(404).json({ error: `No room with given ID was found` });
   }
 });
 
@@ -46,15 +41,11 @@ export const getRoomFromId = asyncHandler(async (req, res) => {
  * @description POST /room
  */
 export const createRoom = asyncHandler(async (req, res) => {
-  Logger.debug("ROOM", "hi");
-  let errors = [];
-
   const room = await Room.findOne({ name: req.body.room_name }).exec();
   if (room) {
     if (room.name === req.body.room_name) {
-      errors.push({ param: "room_taken", msg: "Roomname already taken" });
+      return res.json({ error: "Roomname already taken" });
     }
-    return res.json({ errors: createErrorObject(errors) });
   } else {
     const newRoom = new Room({
       name: req.body.room_name,
@@ -67,23 +58,18 @@ export const createRoom = asyncHandler(async (req, res) => {
       newRoom.accessIds.push(req.user.id);
     }
 
-    newRoom
-      .save()
-      .then((room) => {
-        Room.populate(
-          room,
-          { path: "user", select: "username" },
-          (err, room) => {
-            if (err) {
-              Logger.error("ROOM ROUTE", e);
-            }
-            return res.status(200).json(room);
-          }
-        );
-      })
-      .catch((err) => {
-        return res.json(err);
+    try {
+      const savedRoom = await newRoom.save();
+      const populatedRoom = await Room.populate(savedRoom, {
+        path: "user",
+        select: "username",
       });
+
+      return res.status(200).json({ success: true, room: populatedRoom });
+    } catch (err) {
+      Logger.error("ROOM ROUTE", err);
+      return res.json(err);
+    }
   }
 });
 
@@ -133,7 +119,7 @@ export const verifyRoom = asyncHandler(async (req, res) => {
  */
 export const deleteRoom = asyncHandler(async (req, res) => {
   try {
-    const room = await Room.findOneAndDelete({ name: req.params.room_name })
+    const room = await Room.findOneAndDelete({ name: req.params.room_id })
       .populate("user", ["username"])
       .select("-password")
       .lean();
@@ -142,7 +128,7 @@ export const deleteRoom = asyncHandler(async (req, res) => {
       return res.status(200).json(room);
     } else {
       return res.status(404).json({
-        errors: `No room with name ${req.params.room_name} found, You will now be redirected`,
+        errors: `No room with name ${req.params.room_id} found, You will now be redirected`,
       });
     }
   } catch (err) {
@@ -151,7 +137,7 @@ export const deleteRoom = asyncHandler(async (req, res) => {
 });
 
 /**
- * @description PUT /room/update/name
+ * @description PUT /room/update/:room_id
  */
 export const updateRoom = asyncHandler(async (req, res) => {
   req
@@ -189,7 +175,7 @@ export const updateRoom = asyncHandler(async (req, res) => {
  * @description PUT /room/remove/users
  */
 export const removeUser = asyncHandler(async (req, res) => {
-  const room = await Room.findOne({ name: req.body.room_name });
+  const room = await Room.findById(req.body.room_id);
 
   if (room) {
     if (room.users.find((user) => user.lookup.toString() === req.user.id)) {

@@ -1,3 +1,4 @@
+import Logger from "../logger.js";
 import Message from "../models/Message.js";
 import Room from "../models/Room.js";
 import mongoose from "mongoose";
@@ -46,7 +47,7 @@ export const GET_ROOM_USERS = async (data) => {
 };
 
 export const UPDATE_ROOM_USERS = async (data) => {
-  const room = await Room.findOne({ name: data.room.name })
+  const room = await Room.findOne({ _id: data.room._id })
     .select("-password")
     .populate("users.lookup", ["username", "social", "handle", "image"]);
 
@@ -56,7 +57,7 @@ export const UPDATE_ROOM_USERS = async (data) => {
       !room.users.find((user) => user.lookup._id.toString() === data.user._id)
     ) {
       room.users.push({
-        lookup: mongoose.Types.ObjectId(data.user._id),
+        lookup: mongoose.Types.ObjectId.createFromHexString(data.user._id),
         socketId: data.socketId,
       });
       const updatedRoom = await room.save();
@@ -84,7 +85,9 @@ export const UPDATE_ROOM_USERS = async (data) => {
 };
 
 export const FILTER_ROOM_USERS = async (data) => {
-  const room = await Room.findById(mongoose.Types.ObjectId(data.roomId))
+  const room = await Room.findById(
+    mongoose.Types.ObjectId.createFromHexString(data.roomId)
+  )
     .select("-password")
     .populate("users.lookup", ["username", "social", "handle", "image"]);
   if (room) {

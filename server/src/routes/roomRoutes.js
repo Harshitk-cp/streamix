@@ -20,13 +20,13 @@ router.route("/").get(authenticateJWT, getRoom);
 
 router.route("/:room_id").get(authenticateJWT, getRoomFromId);
 
-router.route("/").post([authenticateJWT, checkCreateRoomFields], createRoom);
+router.route("/").post([authenticateJWT], createRoom);
 
 router.route("/verify").post(authenticateJWT, verifyRoom);
 
-router.route("/:room_name").delete(authenticateJWT, deleteRoom);
+router.route("/:room_id").delete(authenticateJWT, deleteRoom);
 
-router.route("/update/name").put(authenticateJWT, updateRoom);
+router.route("/update/:room_id").put(authenticateJWT, updateRoom);
 
 router.route("/remove/users").put(authenticateJWT, removeUser);
 

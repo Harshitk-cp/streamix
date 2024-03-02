@@ -9,8 +9,8 @@ const RoomSchema = new Schema(
       required: true,
       trim: true,
       unique: true,
-      minlength: ["3", "Room name should be greater than 3 characters"],
-      maxlength: ["20", "Room name should be less than 20 characters"],
+      minlength: [3, "Room name should be greater than 3 characters"],
+      maxlength: [20, "Room name should be less than 20 characters"],
     },
     user: {
       type: Schema.Types.ObjectId,

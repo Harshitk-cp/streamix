@@ -18,19 +18,19 @@ configurePassport(passport);
 Logger.setLevel(LOG_LEVEL.DEBUG);
 
 connectDB();
-
 const route = "/api/v1";
 const app = express();
-const httpServer = createServer(app);
+
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
 app.use(passport.initialize());
 app.use(bodyParser.json());
 app.use(route, apiRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+const httpServer = createServer(app);
 initSocketIO(httpServer);
 
 const PORT = process.env.PORT;

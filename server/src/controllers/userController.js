@@ -16,7 +16,6 @@ export const register = asyncHandler(async (req, res) => {
   const emailExists = await User.exists({ email: email });
   if (emailExists) {
     res.status(400);
-    console.log("exist ");
     throw new Error("Email already exist");
   }
   const user = new User({
@@ -56,7 +55,7 @@ export const login = asyncHandler(async (req, res) => {
 
   if (!passwordMatching) {
     res.status(400);
-    throw new Error("Password incorrect");
+    throw new Error("Incorrect Password ");
   }
 
   user.token = generateToken(user.id);

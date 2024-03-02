@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import Logger from "./logger.js";
-
+import mongoose from "mongoose";
 import {
   ADD_MESSAGE,
   UPDATE_ROOM_USERS,
@@ -9,11 +9,14 @@ import {
   FILTER_ROOM_USERS,
   CREATE_MESSAGE_CONTENT,
 } from "./config/socketioActions.js";
+import { joinRoom } from "./helpers/socketEvents.js";
 
 let userTypings = {};
 
 const initSocketIO = (httpServer) => {
-  const io = new Server(httpServer);
+  const io = new Server(httpServer, {
+    transports: ["websocket"],
+  });
 
   io.on("connection", (socket) => {
     Logger.info("socket", `User connected: ${socket.id}`);
@@ -34,7 +37,7 @@ const initSocketIO = (httpServer) => {
           JSON.stringify(
             await GET_ROOM_USERS({
               room: {
-                _id: mongoose.Types.ObjectId(currentRoomId),
+                _id: mongoose.Types.ObjectId.createFromHexString(currentRoomId),
               },
             })
           )
@@ -64,7 +67,7 @@ const initSocketIO = (httpServer) => {
     socket.on("userJoined", (data) => {
       currentRoomId = data.room._id;
       data.socketId = socket.id;
-      JOIN_ROOM(socket, data);
+      joinRoom(socket, data);
     });
 
     socket.on("exitRoom", (data) => {

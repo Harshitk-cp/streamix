@@ -1,5 +1,9 @@
 import { verifyToken } from "../utils/generateTokens.js";
 import asyncHandler from "express-async-handler";
+import { check, validationResult } from "express-validator";
+// import { ValidationError } from "sequelize";
+import Logger from "../logger.js";
+import { errorHandler } from "./error.js";
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
   const bearerHeader = req.headers["authorization"];
@@ -34,29 +38,29 @@ const createErrorObject = (errors) => {
 
 const checkCreateRoomFields = asyncHandler(async (req, res, next) => {
   if (!req.body.room_name) {
-    req.check("room_name").not().isEmpty().withMessage("Room name is required");
+    check("room_name").not().isEmpty().withMessage("Room name is required");
   } else {
-    req
-      .check("room_name")
+    check("room_name")
       .isString()
       .isLength({ min: 3, max: 20 })
       .withMessage("Room name must be between 5 and 20 characters");
   }
 
   if (req.body.password) {
-    req
-      .check("password")
+    check("password")
       .not()
       .isEmpty()
       .isLength({ min: 5, max: 15 })
       .withMessage("Password should be between 5 and 15 characters");
   }
 
-  const errors = req.validationErrors();
+  const errors = validationResult(req);
 
   if (errors) {
+    Logger.error("ROOM FIELD", createErrorObject(errors.array()));
+
     res.send({
-      errors: createErrorObject(errors),
+      error: createErrorObject(errors.array()),
     });
   } else {
     next();
