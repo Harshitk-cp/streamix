@@ -52,14 +52,12 @@ const initSocketIO = (httpServer) => {
 
         socket.broadcast.to(currentRoomId).emit(
           "receivedNewMessage",
-          JSON.stringify(
-            await ADD_MESSAGE({
-              room: { _id: roomState.previous._id },
-              user: null,
-              content: CREATE_MESSAGE_CONTENT(roomState, socket.id),
-              admin: true,
-            })
-          )
+          await ADD_MESSAGE({
+            room: { _id: roomState.previous._id },
+            user: null,
+            content: CREATE_MESSAGE_CONTENT(roomState, socket.id),
+            admin: true,
+          })
         );
       }
     });
@@ -93,7 +91,7 @@ const initSocketIO = (httpServer) => {
         /** Send Exit Message back to room */
         socket.broadcast
           .to(data.room._id)
-          .emit("receivedNewMessage", JSON.stringify(await ADD_MESSAGE(data)));
+          .emit("receivedNewMessage", await ADD_MESSAGE(data));
       });
     });
 
@@ -123,6 +121,13 @@ const initSocketIO = (httpServer) => {
       socket.broadcast
         .to(data.room._id)
         .emit("receivedUserTyping", JSON.stringify(userTypings[data.room._id]));
+    });
+
+    socket.on("newMessage", async (data) => {
+      const newMessage = await ADD_MESSAGE(data);
+
+      // Emit data back to the client for display
+      io.to(data.room._id).emit("receivedNewMessage", newMessage);
     });
 
     socket.on("roomDeleted", async (data) => {

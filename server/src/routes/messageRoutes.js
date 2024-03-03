@@ -9,6 +9,6 @@ const authenticateJWT = passport.authenticate("jwt", { session: false });
 
 router.route("/:room_id").get(authenticateJWT, getMessages);
 
-router.route("/").get(authenticateJWT, newMessage);
+router.route("/").post(authenticateJWT, newMessage);
 
 export default router;

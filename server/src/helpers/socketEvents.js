@@ -33,13 +33,11 @@ export const joinRoom = async (socket, data) => {
   /** Emit back the message */
   socket.broadcast.to(data.room._id).emit(
     "receivedNewMessage",
-    JSON.stringify(
-      await ADD_MESSAGE({
-        room: data.room,
-        user: false,
-        content: data.content,
-        admin: data.admin,
-      })
-    )
+    await ADD_MESSAGE({
+      room: data.room,
+      user: false,
+      content: data.content,
+      admin: data.admin,
+    })
   );
 };
