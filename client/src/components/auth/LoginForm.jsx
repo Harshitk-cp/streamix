@@ -26,7 +26,6 @@ export default function LoginForm() {
     const res = await loginUser(JSON.stringify(userData));
 
     if (res.success) {
-      console.log("success");
       setError("");
 
       router.push("/dashboard");
@@ -37,7 +36,6 @@ export default function LoginForm() {
       // const form = e.target;
       // form.reset();
     } else {
-      console.log("failure");
       setError(res.error);
     }
   };

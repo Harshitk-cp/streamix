@@ -9,16 +9,19 @@ import socket, {
 import { createNewMessage, getMessages } from "@/app/api/rooms/messages";
 import { getRoomFromId } from "@/app/api/rooms/room";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import MessageItem from "./MessageItem";
 
 const Chat = (roomId) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [user, setUser] = useState({});
 
   useEffect(() => {
+    const _user = JSON.parse(localStorage.getItem("user"));
+    setUser(_user);
     getRoomMessages();
     joinRoom();
-
     // return () => {
     //   socket.off("updateRoomData", handleUpdateRoomData);
     //   socket.off("updateRooms", handleUpdateRooms);
@@ -29,7 +32,7 @@ const Chat = (roomId) => {
     try {
       userJoined();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -56,23 +59,14 @@ const Chat = (roomId) => {
   };
 
   const sendMessage = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
     const roomReq = {
       content: newMessage,
-      user: { _id: user._id },
+      user: { _id: user._id, userName: user.userName },
       room: { _id: "65d040adc3004b522d973095" },
       admin: true,
-      //   token: user.token,
     };
 
-    // const res = await createNewMessage(JSON.stringify(roomReq));
-
-    // if (res.success) {
-    //   console.log(res);
     sendNewMessage(roomReq);
-    // } else {
-    //   console.log("Failed to send message");
-    // }
   };
 
   socket.on("updateRoomData", (data) => {
@@ -88,21 +82,35 @@ const Chat = (roomId) => {
   });
 
   return (
-    <div className="mx-20">
+    <div
+      className=" w-full"
+      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+    >
       <div
         style={{
-          border: "1px solid #ccc",
-          minHeight: "300px",
-          padding: "10px",
+          flex: 1,
           overflowY: "auto",
+          border: "1px solid #ccc",
+          padding: "10px",
+          marginBottom: "10px",
         }}
       >
-        {messages.map((message) => (
-          <div key={message._id} className="mb-10 text-white">
-            {/* <strong>{message.timestamp.toLocaleTimeString()}:</strong>{" "} */}
-            {message.content}
-          </div>
-        ))}
+        {messages
+          .filter(
+            (message) =>
+              message.user?.userName !== null &&
+              message.user?.userName !== undefined
+          )
+          .map((message) => (
+            <div key={message._id} className="mb-10 text-white">
+              <MessageItem
+                message={message.content}
+                createdAt={message.created_at}
+                name={message.user?.userName || ""}
+                isSelf={message.user?._id == user._id}
+              />
+            </div>
+          ))}
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <input
@@ -129,4 +137,48 @@ const Chat = (roomId) => {
   );
 };
 
-export default Chat;
+const ResizableChat = () => {
+  const [minWidth, maxWidth, defaultWidth] = [200, 500, 350];
+  const [width, setWidth] = useState(defaultWidth);
+  const isResized = useRef(false);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", (e) => {
+      if (!isResized.current) {
+        return;
+      }
+
+      setWidth((previousWidth) => {
+        const newWidth = previousWidth - e.movementX / 2;
+
+        const isWidthInRange = newWidth >= minWidth && newWidth <= maxWidth;
+
+        return isWidthInRange ? newWidth : previousWidth;
+      });
+    });
+
+    window.addEventListener("mouseup", () => {
+      isResized.current = false;
+    });
+  }, []);
+
+  return (
+    <div className="flex">
+      <div
+        className="w-4 cursor-col-resize bg-blue-500"
+        onMouseDown={() => {
+          isResized.current = true;
+        }}
+      />
+      <div
+        style={{
+          width: `${width / 16}rem`,
+        }}
+      >
+        <Chat />
+      </div>
+    </div>
+  );
+};
+
+export { Chat, ResizableChat };

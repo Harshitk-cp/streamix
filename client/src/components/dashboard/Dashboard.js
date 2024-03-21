@@ -12,7 +12,7 @@ export default function DashBoard() {
   const [roomData, setRoomData] = useState([]);
 
   useEffect(() => {
-    // _getRooms();
+    _getRooms();
     initSocket();
   }, []);
 
@@ -30,9 +30,8 @@ export default function DashBoard() {
 
     if (res.success) {
       setRoomData(res.rooms);
-      console.log(res);
     } else {
-      console.log(res.error);
+      // console.log(res.error);
     }
   };
 

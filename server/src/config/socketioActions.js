@@ -7,13 +7,18 @@ export const ADD_MESSAGE = async (data) => {
   const newMessage = await new Message({
     content: data.content,
     admin: data.admin ? true : false,
-    user: data.user ? data.user._id : null,
+    user: data.user
+      ? {
+          _id: data.user._id,
+          userName: data.user.userName,
+        }
+      : null,
     room: data.room._id,
   }).save();
 
   return Message.populate(newMessage, {
     path: "user",
-    select: "username social handle image",
+    select: "userName",
   });
 };
 
