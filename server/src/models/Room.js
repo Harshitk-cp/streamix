@@ -29,6 +29,29 @@ const RoomSchema = new Schema(
       type: Array,
       default: [],
     },
+    thumbnailUrl: {
+      type: String,
+    },
+    ingressId: {
+      type: String,
+      unique: true,
+    },
+    serverUrl: {
+      type: String,
+    },
+    streamKey: {
+      type: String,
+    },
+
+    isLive: {
+      type: Boolean,
+      default: false,
+    },
+
+    isChatEnabled: {
+      type: Boolean,
+      default: true,
+    },
     users: [
       {
         _id: false,

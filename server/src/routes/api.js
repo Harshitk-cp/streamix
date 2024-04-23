@@ -12,5 +12,6 @@ apiRouter.route("/").get((req, res) => {
 apiRouter.use("/users", userRoutes);
 apiRouter.use("/room", roomRoutes);
 apiRouter.use("/messages", messageRoues);
+apiRouter.use("/ingres", messageRoues);
 
 export default apiRouter;

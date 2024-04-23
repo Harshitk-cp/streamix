@@ -1,17 +1,15 @@
-export async function getRooms(req) {
-  const request = await JSON.parse(req);
+export async function getRooms() {
   try {
     const response = await fetch("http://localhost:8080/room", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${request.token}`,
       },
     });
 
     const data = await response.json();
 
-    return data;
+    return data.rooms;
   } catch (error) {
     return { success: false, error: "No Rooms Found" };
   }
@@ -34,6 +32,26 @@ export async function getRoomFromId(req) {
     const data = await response.json();
 
     return data;
+  } catch (error) {
+    return { success: false, error: "No room with given ID was found" };
+  }
+}
+
+export async function getRoomFromName(req) {
+  const request = await JSON.parse(req);
+  try {
+    const response = await fetch(
+      `http://localhost:8080/room/name/${request.roomName}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+
+    return data.rooms || [];
   } catch (error) {
     return { success: false, error: "No room with given ID was found" };
   }
@@ -155,5 +173,62 @@ export async function removeAllUser(req) {
     return data;
   } catch (error) {
     return { success: false, error: "No rooms found" };
+  }
+}
+
+export async function createIngress(req) {
+  const request = await JSON.parse(req);
+  try {
+    const response = await fetch("http://localhost:8080/room/createIngress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${request.token}`,
+      },
+      body: req,
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    return { success: false, error: "Failed to create Ingress" };
+  }
+}
+
+export async function livekitWebhook(req) {
+  try {
+    const response = await fetch(
+      "http://localhost:8080/room/webhooks/livekit",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: req,
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, error: "Failed to create Ingress" };
+  }
+}
+
+export async function createToken(req) {
+  try {
+    const response = await fetch("http://localhost:8080/users/createToken", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: req,
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, error: "Failed to create Ingress" };
   }
 }

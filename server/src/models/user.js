@@ -32,6 +32,10 @@ const UserSchema = new Schema(
       avatar: String,
     },
     token: String,
+    room: {
+      type: Schema.Types.ObjectId,
+      ref: "Room",
+    },
   },
   {
     timestamps: true,

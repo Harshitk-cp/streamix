@@ -1,5 +1,5 @@
 import VideoPlayer from "@/components/VideoPlayer";
-import { ResizableChat } from "@/components/room/Chat";
+import ResizableChat from "@/components/room/Chat";
 
 export default function RoomPage() {
   return (

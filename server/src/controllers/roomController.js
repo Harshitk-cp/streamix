@@ -5,6 +5,9 @@ import Room from "../models/Room.js";
 import { createErrorObject } from "../middlewares/auth.js";
 import { LOG_LEVEL } from "../utils/enums.js";
 import Logger from "../logger.js";
+import { createIngress } from "../services/ingres.js";
+import { AccessToken } from "livekit-server-sdk";
+import User from "../models/user.js";
 Logger.setLevel(LOG_LEVEL.DEBUG);
 
 /**
@@ -34,6 +37,29 @@ export const getRoomFromId = asyncHandler(async (req, res) => {
     return res.status(200).json({ success: true, room: room });
   } else {
     return res.status(404).json({ error: `No room with given ID was found` });
+  }
+});
+
+/**
+ * @description GET /room/name/:roomName
+ */
+export const getRoomFromName = asyncHandler(async (req, res) => {
+  const regex = new RegExp(req.params.roomName, "i");
+  const rooms = await Room.find({ name: { $regex: regex } });
+
+  if (rooms.length > 0) {
+    const roomsWithUsers = [];
+
+    for (const room of rooms) {
+      const user = await User.findOne({ userName: { $regex: regex } });
+      const roomWithUser = { ...room.toJSON(), user };
+      roomsWithUsers.push(roomWithUser);
+    }
+    return res.status(200).json({ success: true, rooms: roomsWithUsers });
+  } else {
+    return res.status(404).json({
+      error: `No rooms containing '${req.params.roomName}' were found`,
+    });
   }
 });
 
@@ -214,3 +240,35 @@ export const removeAllUser = asyncHandler(async (req, res) => {
     return res.status(404).json({ error: "No Rooms Found" });
   }
 });
+
+/**
+ * @description POST /room/createIngress/
+ */
+export const createNewIngress = asyncHandler(async (req, res) => {
+  if (!req.body.roomId) {
+    return res.json({ message: "Room id is required." });
+  }
+
+  await createIngress(req.body.selfId, req.body.selfName, req.body.roomId);
+
+  return res.status(200).json({ success: true, data: "Ingress created!" });
+});
+
+/**
+ * @description POST /room/webhooks/livekit
+ */
+
+export const livekitWebhook = async (req, res) => {
+  try {
+    const room = await Room.findOne({ ingressId: req.body.ingressId });
+    if (room) {
+      room.isLive = req.body.isLive;
+      await room.save();
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

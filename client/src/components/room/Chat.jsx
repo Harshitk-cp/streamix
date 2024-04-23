@@ -181,4 +181,4 @@ const ResizableChat = () => {
   );
 };
 
-export { Chat, ResizableChat };
+export default ResizableChat;

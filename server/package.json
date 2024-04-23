@@ -24,6 +24,7 @@
     "formidable": "^3.5.1",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "livekit-server-sdk": "^1.2.7",
     "mongoose": "^8.0.3",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",

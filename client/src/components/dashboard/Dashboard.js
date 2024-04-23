@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import JoinRoomModal from "./JoinRoomModal";
 import CreateRoomModal from "./CreateRoomModel";
 import { initializeSocket } from "@/app/(routes)/socket";
+import { Sidebar } from "../../app/(routes)/(dashboard)/u/[username]/_components/sidebar";
+import { Container } from "../../app/(routes)/(dashboard)/u/[username]/_components/container";
 
 export default function DashBoard() {
   const [joinRoomModalVisible, setJoinRoomModalVisible] = useState(false);
@@ -52,8 +54,8 @@ export default function DashBoard() {
   };
 
   return (
-    <div className="min-h-screen ">
-      <div className="bg-gray-800 shadow-lg p-4 text-white">
+    <>
+      <div className="bg-gray-800 shadow-lg p-4 text-white absolute left-0 top-0 bottom-0 z-10">
         <button
           onClick={openJoinRoomModal}
           className="bg-transparent hover:bg-transparent"
@@ -67,21 +69,65 @@ export default function DashBoard() {
           Create Room
         </button>
       </div>
-
-      {joinRoomModalVisible && <JoinRoomModal onClose={closeJoinRoomModal} />}
-
-      {createRoomModalVisible && (
-        <CreateRoomModal onClose={closeCreateRoomModal} />
-      )}
-
-      <div className="grid grid-cols-3 gap-4 p-4">
-        {roomData.map((room) => (
-          <div key={room._id} className="bg-white p-4 border">
-            <p>{room.name}</p>
-            <p>{room._id}</p>
+      <div className="flex h-full pt-20">
+        <Sidebar />
+        <Container>
+          <div className="ml-64">
+            {" "}
+            {joinRoomModalVisible && (
+              <JoinRoomModal onClose={closeJoinRoomModal} />
+            )}
+            {createRoomModalVisible && (
+              <CreateRoomModal onClose={closeCreateRoomModal} />
+            )}
+            <div className="grid grid-cols-3 gap-4 p-4">
+              {roomData.map((room) => (
+                <div key={room._id} className="bg-white p-4 border">
+                  <p>{room.name}</p>
+                  <p>{room._id}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+        </Container>
       </div>
-    </div>
+    </>
+    // <div>
+    //   <div className="bg-gray-800 shadow-lg p-4 text-white absolute left-0 top-0 bottom-0 z-10">
+    //     <button
+    //       onClick={openJoinRoomModal}
+    //       className="bg-transparent hover:bg-transparent"
+    //     >
+    //       Join Room
+    //     </button>
+    //     <button
+    //       onClick={openCreateRoomModal}
+    //       className="bg-transparent hover:bg-transparent"
+    //     >
+    //       Create Room
+    //     </button>
+    //   </div>
+    //   <div>
+    //     <Sidebar />
+
+    //     <div className="ml-64">
+    //       {" "}
+    //       {joinRoomModalVisible && (
+    //         <JoinRoomModal onClose={closeJoinRoomModal} />
+    //       )}
+    //       {createRoomModalVisible && (
+    //         <CreateRoomModal onClose={closeCreateRoomModal} />
+    //       )}
+    //       <div className="grid grid-cols-3 gap-4 p-4">
+    //         {roomData.map((room) => (
+    //           <div key={room._id} className="bg-white p-4 border">
+    //             <p>{room.name}</p>
+    //             <p>{room._id}</p>
+    //           </div>
+    //         ))}
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }
