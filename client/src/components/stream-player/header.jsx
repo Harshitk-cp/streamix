@@ -8,9 +8,9 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { VerifiedMark } from "../ui/verified-mark";
-import { UserAvatar, UserAvatarSkeleton } from "../ui/user-avatar";
 
 import { Actions, ActionsSkeleton } from "./actions";
+import UserAvatar, { UserAvatarSkeleton } from "../ui/user-avatar";
 
 export const Header = ({
   imageUrl,

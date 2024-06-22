@@ -1,25 +1,25 @@
+import { StreamPlayer } from "@/components/stream-player";
+import { isBlockedByUser } from "@/lib/block-service";
+import { isFollowingUser } from "@/lib/follow-service";
+import { getUserByUsername } from "@/lib/user-service";
 import { notFound } from "next/navigation";
 
-import { StreamPlayer } from "@/components/stream-player";
-import { getUserFromName } from "@/app/api/users/user";
+async function UserPage({ params }) {
+  const user = await getUserByUsername(params.username);
 
-const UserPage = async ({ params }) => {
-  const user = await getUserFromName({
-    userName: "kage",
-  });
-
-  if (!user || !user.room) {
+  if (!user || !user.stream) {
     notFound();
   }
 
-  // const isFollowing = await isFollowingUser(user.id);
-  // const isBlocked = await isBlockedByUser(user.id);
+  const isFollowing = await isFollowingUser(user.id);
+  const isBlocked = await isBlockedByUser(user.id);
 
-  // if (isBlocked) {
-  //   notFound();
-  // }
-
-  return <StreamPlayer user={user} room={user.room} isFollowing={false} />;
-};
+  if (isBlocked) {
+    notFound();
+  }
+  return (
+    <StreamPlayer user={user} stream={user.stream} isFollowing={isFollowing} />
+  );
+}
 
 export default UserPage;

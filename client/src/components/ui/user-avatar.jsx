@@ -1,11 +1,11 @@
+import React from "react";
 import { cva } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LiveBadge } from "./live-badge";
+import { Skeleton } from "./skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LiveBadge } from "./live-badge";
 
-const avatarSizes = cva("", {
+export const avatarSizes = cva("", {
   variants: {
     size: {
       default: "h-8 w-8",
@@ -17,18 +17,13 @@ const avatarSizes = cva("", {
   },
 });
 
-export const UserAvatar = ({
-  username = "",
-  imageUrl,
-  isLive,
-  showBadge,
-  size,
-}) => {
+export const UserAvatarSkeleton = ({ size }) => {
+  return <Skeleton className={cn("rounded-full", avatarSizes({ size }))} />;
+};
+
+function UserAvatar({ imageUrl, username, isLive, showBadge, size }) {
   const canShowBadge = showBadge && isLive;
-
-  const displayUsername =
-    typeof username === "string" && username.length > 0 ? username : "Unknown";
-
+  console.log(imageUrl);
   return (
     <div className="relative">
       <Avatar
@@ -38,10 +33,6 @@ export const UserAvatar = ({
         )}
       >
         <AvatarImage src={imageUrl} className="object-cover" />
-        <AvatarFallback>
-          {displayUsername[0]}
-          {displayUsername[displayUsername.length - 1]}
-        </AvatarFallback>
       </Avatar>
       {canShowBadge && (
         <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
@@ -50,8 +41,6 @@ export const UserAvatar = ({
       )}
     </div>
   );
-};
+}
 
-export const UserAvatarSkeleton = ({ size }) => {
-  return <Skeleton className={cn("rounded-full", avatarSizes({ size }))} />;
-};
+export default UserAvatar;

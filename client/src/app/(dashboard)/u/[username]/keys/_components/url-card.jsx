@@ -1,8 +1,9 @@
 import { Input } from "@/components/ui/input";
 
-import { CopyButton } from "./copy-button";
+import React from "react";
+import CopyButton from "./copy-button";
 
-export const UrlCard = ({ value }) => {
+function UrlCard({ value }) {
   return (
     <div className="rounded-xl bg-muted p-6">
       <div className="flex items-center gap-x-10">
@@ -16,4 +17,6 @@ export const UrlCard = ({ value }) => {
       </div>
     </div>
   );
-};
+}
+
+export default UrlCard;

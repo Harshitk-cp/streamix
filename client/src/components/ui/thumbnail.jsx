@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { LiveBadge } from "./live-badge";
-import { UserAvatar } from "./user-avatar";
+import UserAvatar from "./user-avatar";
 
 export const Thumbnail = ({ src, fallback, isLive, username }) => {
   let content;

@@ -1,49 +1,30 @@
-"use client";
-import { UrlCard } from "./_components/url-card";
-import { KeyCard } from "./_components/key-card";
-import { ConnectModal } from "./_components/connect-modal";
-import { useEffect, useState } from "react";
-import { getRoomFromId } from "@/app/api/rooms/room";
+import React from "react";
+import { getSelf } from "@/lib/auth-service";
+import { getStreamByUserId } from "@/lib/stream-service";
 
-const KeysPage = () => {
-  const [room, setRoom] = useState({});
+import UrlCard from "./_components/url-card";
+import KeyCard from "./_components/key-card";
+import ConnectModel from "./_components/connect-modal";
 
-  useEffect(() => {
-    _getRoomById();
-  }, []);
+async function KeysPage() {
+  const self = await getSelf();
+  const stream = await getStreamByUserId(self.id);
 
-  const _getRoomById = async () => {
-    const _user = JSON.parse(localStorage.getItem("user"));
-    const authToken = localStorage.getItem("authToken");
-
-    try {
-      const roomReq = {
-        roomId: _user.room,
-        token: authToken,
-      };
-      const _room = await getRoomFromId(JSON.stringify(roomReq));
-      setRoom(_room.room);
-    } catch (error) {
-      // console.log(error);
-    }
-  };
-
-  if (!room) {
-    throw new Error("Room not found");
+  if (!stream) {
+    return <h1 className="p-6 text-2xl font-bold">Stream Model not found</h1>;
   }
-
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Keys & URLs</h1>
-        <ConnectModal />
+        <ConnectModel />
       </div>
       <div className="space-y-4">
-        <UrlCard value={room.serverUrl} />
-        <KeyCard value={room.streamKey} />
+        <UrlCard value={stream.serverUrl} />
+        <KeyCard value={stream.streamKey} />
       </div>
     </div>
   );
-};
+}
 
 export default KeysPage;

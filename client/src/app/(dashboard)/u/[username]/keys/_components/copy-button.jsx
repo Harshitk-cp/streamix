@@ -1,21 +1,18 @@
 "use client";
-
-import { useState } from "react";
-import { CheckCheck, Copy } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
+import { CheckCheck, Copy } from "lucide-react";
+import React, { useState } from "react";
 
-export const CopyButton = ({ value }) => {
+function CopyButton({ value }) {
   const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = () => {
     if (!value) return;
 
     setIsCopied(true);
+
     navigator.clipboard.writeText(value);
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 1000);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   const Icon = isCopied ? CheckCheck : Copy;
@@ -30,4 +27,6 @@ export const CopyButton = ({ value }) => {
       <Icon className="h-4 w-4" />
     </Button>
   );
-};
+}
+
+export default CopyButton;

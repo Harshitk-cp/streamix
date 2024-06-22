@@ -1,11 +1,7 @@
 "use client";
-
-import { toast } from "sonner";
-import { useState, useTransition, useRef, ElementRef } from "react";
-import { AlertTriangle } from "lucide-react";
-import { IngressInput } from "livekit-server-sdk";
-
 import { Button } from "@/components/ui/button";
+import React, { useTransition } from "react";
+import { IngressInput } from "livekit-server-sdk";
 import {
   Dialog,
   DialogClose,
@@ -17,81 +13,59 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
-  SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createIngress } from "@/app/api/rooms/room";
-import { revalidatePath } from "next/cache";
+import { AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 const RTMP = String(IngressInput.RTMP_INPUT);
-const WHIP = String(IngressInput.WHIP_INPUT);
 
-export const ConnectModal = () => {
-  const closeRef = useRef(null);
+function ConnectModel() {
+  const closeRef = null;
   const [isPending, startTransition] = useTransition();
-  const [ingressType, setIngressType] = useState(RTMP);
 
   const onSubmit = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const req = {
-      selfId: user._id,
-      selfName: user.userName,
-      roomId: user.room,
-      token: user.token,
-    };
-
     startTransition(() => {
-      createIngress(JSON.stringify(req))
+      createIngress(parseInt(ingressType))
         .then(() => {
-          toast.success("Ingress created");
+          toast.success("Connection generated");
           closeRef?.current?.click();
-          revalidatePath(`/u/${req.selfName}/keys`);
         })
-        .catch(() => toast.error("Something went wrong"));
+        .catch(() => toast.error("Failed to generate connection"));
     });
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="primary">Generate connection</Button>
+        <Button variant="primary">Generate Connection</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Generate connection</DialogTitle>
+          <DialogTitle>Generate Connection</DialogTitle>
         </DialogHeader>
-        <Select
-          disabled={isPending}
-          value={ingressType}
-          onValueChange={(value) => setIngressType(value)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Ingress Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={RTMP}>RTMP</SelectItem>
-            <SelectItem value={WHIP}>WHIP</SelectItem>
-          </SelectContent>
-        </Select>
+
         <Alert>
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Warning!</AlertTitle>
+          <AlertTitle>Warning !</AlertTitle>
           <AlertDescription>
-            This action will reset all active streams using the current
-            connection
+            This action will reset all your streams that are running on this
+            current connection.
           </AlertDescription>
         </Alert>
         <div className="flex justify-between">
           <DialogClose ref={closeRef} asChild>
             <Button variant="ghost">Cancel</Button>
           </DialogClose>
-          <Button disabled={isPending} onClick={onSubmit} variant="primary">
+          <Button variant="primary" onClick={onSubmit} disabled={isPending}>
             Generate
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
-};
+}
+
+export default ConnectModel;

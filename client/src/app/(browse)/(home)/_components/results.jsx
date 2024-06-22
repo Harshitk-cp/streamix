@@ -5,12 +5,12 @@ import { useUserStore } from "@/store/user-user";
 import { getRooms } from "@/app/api/rooms/room";
 import { getUserFromId } from "@/app/api/users/user";
 export const Results = async () => {
-  const rooms = await getRooms();
-  const promises = rooms.map(async (room) => {
-    const user = await getUserFromId({ userId: room.user._id });
-    return { ...room, user };
-  });
-  const combinedData = await Promise.all(promises);
+  // const rooms = await getRooms();
+  // const promises = rooms.map(async (room) => {
+  //   const user = await getUserFromId({ userId: room.user._id });
+  //   return { ...room, user };
+  // });
+  const combinedData = [];
 
   return (
     <div>

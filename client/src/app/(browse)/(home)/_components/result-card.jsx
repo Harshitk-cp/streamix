@@ -1,17 +1,17 @@
 import Link from "next/link";
-
-import { Thumbnail, ThumbnailSkeleton } from "@/components/ui/thumbnail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LiveBadge } from "@/components/ui/live-badge";
-import { UserAvatar, UserAvatarSkeleton } from "@/components/ui/user-avatar";
+
+import { Thumbnail, ThumbnailSkeleton } from "@/components/ui/thumbnail";
+import UserAvatar, { UserAvatarSkeleton } from "@/components/ui/user-avatar";
 
 export const ResultCard = ({ data }) => {
   return (
-    <Link href={`/${data.user.userName}`}>
+    <Link href={`/${data.user.username}`}>
       <div className="h-full w-full space-y-4">
         <Thumbnail
           src={data.thumbnailUrl}
-          fallback={""}
+          fallback={data.user.imageUrl}
           isLive={data.isLive}
           username={data.user.username}
         />
@@ -25,11 +25,10 @@ export const ResultCard = ({ data }) => {
             <p className="truncate font-semibold hover:text-blue-500">
               {data.name}
             </p>
-            <p className="text-muted-foreground">{"data.user.username"}</p>
+            <p className="text-muted-foreground">{data.user.username}</p>
           </div>
         </div>
       </div>
-      //{" "}
     </Link>
   );
 };

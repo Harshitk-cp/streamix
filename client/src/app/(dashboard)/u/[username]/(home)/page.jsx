@@ -1,47 +1,19 @@
-"use client";
-import { getUserFromName } from "@/app/api/users/user";
-import { StreamPlayer, StreamPlayerSkeleton } from "@/components/stream-player";
-import { useState, useEffect } from "react";
+import { currentUser } from "@clerk/nextjs";
 
-const CreatorPage = ({ params }) => {
-  const [externalUser, setExternalUser] = useState({});
-  const [user, setUser] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+import { getUserByUsername } from "@/lib/user-service";
+import { StreamPlayer } from "@/components/stream-player/index";
 
-  useEffect(() => {
-    _getUser();
-  }, []);
+const CreatorPage = async ({ params }) => {
+  const externalUser = await currentUser();
+  const user = await getUserByUsername(params.username);
 
-  const _getUser = async () => {
-    try {
-      const _externalUser = JSON.parse(localStorage.getItem("user"));
-      setExternalUser(_externalUser);
-      const _user = await getUserFromName({
-        userName: params.username,
-      });
-      setUser(_user);
-      setIsLoading(false);
-    } catch (e) {
-      console.log(e);
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div>
-        <StreamPlayerSkeleton />
-      </div>
-    );
-  }
-
-  if (!user || user._id !== externalUser._id || !user.room) {
+  if (!user || user.externalUserId !== externalUser?.id || !user.stream) {
     throw new Error("Unauthorized");
   }
 
   return (
     <div className="h-full">
-      <StreamPlayer user={user} room={user.room} isFollowing={true} />
+      <StreamPlayer user={user} stream={user.stream} isFollowing />
     </div>
   );
 };

@@ -1,44 +1,38 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { Fullscreen, KeyRound, MessageSquare, Users } from "lucide-react";
-
 import { NavItem, NavItemSkeleton } from "./nav-item";
-import { useEffect, useState } from "react";
 
 export const Navigation = () => {
   const pathname = usePathname();
-
-  const [user, setUser] = useState({});
-  useEffect(() => {
-    const _user = JSON.parse(localStorage.getItem("user"));
-    setUser(_user);
-  }, []);
+  const { user } = useUser();
 
   const routes = [
     {
       label: "Stream",
-      href: `/u/${user.userName}`,
+      href: `/u/${user?.username}`,
       icon: Fullscreen,
     },
     {
       label: "Keys",
-      href: `/u/${user.userName}/keys`,
+      href: `/u/${user?.username}/keys`,
       icon: KeyRound,
     },
     {
-      label: "Chat",
-      href: `/u/${user.userName}/chat`,
+      label: "Chat Settings",
+      href: `/u/${user?.username}/chat`,
       icon: MessageSquare,
     },
     {
       label: "Community",
-      href: `/u/${user.userName}/community`,
+      href: `/u/${user?.username}/community`,
       icon: Users,
     },
   ];
 
-  if (!user.userName) {
+  if (!user?.username) {
     return (
       <ul className="space-y-2">
         {[...Array(4)].map((_, i) => (
