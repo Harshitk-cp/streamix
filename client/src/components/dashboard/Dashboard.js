@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import JoinRoomModal from "./JoinRoomModal";
 import CreateRoomModal from "./CreateRoomModel";
 import { initializeSocket } from "@/app/(routes)/socket";
-import { Sidebar } from "../../app/(routes)/(dashboard)/u/[username]/_components/sidebar";
-import { Container } from "../../app/(routes)/(dashboard)/u/[username]/_components/container";
+import { Sidebar } from "../../app/(dashboard)/u/[username]/_components/sidebar";
+import { Container } from "../../app/(dashboard)/u/[username]/_components/container";
 
 export default function DashBoard() {
   const [joinRoomModalVisible, setJoinRoomModalVisible] = useState(false);
