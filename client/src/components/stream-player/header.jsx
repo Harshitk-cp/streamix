@@ -8,9 +8,9 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { VerifiedMark } from "../ui/verified-mark";
-import { UserAvatar, UserAvatarSkeleton } from "../ui/user-avatar";
 
 import { Actions, ActionsSkeleton } from "./actions";
+import UserAvatar, { UserAvatarSkeleton } from "../ui/user-avatar";
 
 export const Header = ({
   imageUrl,
@@ -19,13 +19,9 @@ export const Header = ({
   viewerIdentity,
   isFollowing,
   name,
+  isLive,
+  participantsLength,
 }) => {
-  const participants = useParticipants();
-  const participant = useRemoteParticipant(hostIdentity);
-
-  const isLive = !!participant;
-  const participantCount = participants.length - 1;
-
   const hostAsViewer = `host-${hostIdentity}`;
   const isHost = viewerIdentity === hostAsViewer;
 
@@ -49,8 +45,8 @@ export const Header = ({
             <div className="font-semibold flex gap-x-1 items-center text-xs text-rose-500">
               <UserIcon className="h-4 w-4" />
               <p>
-                {participantCount}{" "}
-                {participantCount === 1 ? "viewer" : "viewers"}
+                {participantsLength}{" "}
+                {participantsLength === 1 ? "viewer" : "viewers"}
               </p>
             </div>
           ) : (

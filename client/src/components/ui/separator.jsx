@@ -10,7 +10,7 @@ const Separator = (
   ref
 ) => (
   <SeparatorPrimitive.Root
-    ref={ref}
+    // ref={ref}
     decorative={decorative}
     orientation={orientation}
     className={cn(
