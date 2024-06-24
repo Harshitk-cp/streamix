@@ -3,11 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ConnectionState } from "livekit-client";
 import { useMediaQuery } from "usehooks-ts";
-import {
-  useChat,
-  useConnectionState,
-  useRemoteParticipant,
-} from "@livekit/components-react";
 
 import { ChatVariant, useChatSidebar } from "@/store/use-chat-sidebar";
 
@@ -18,24 +13,21 @@ import { ChatCommunity } from "./chat-community";
 
 export const Chat = ({
   hostName,
-  hostIdentity,
   viewerName,
   isFollowing,
   isChatEnabled,
   isChatDelayed,
   isChatFollowersOnly,
+  isPublishing,
+  participant,
+  chatMessages,
+  sendChatMessage,
 }) => {
   const matches = useMediaQuery("(max-width: 1024px)");
   const { variant, onExpand } = useChatSidebar((state) => state);
-  const connectionState = useConnectionState();
-  const participant = useRemoteParticipant(hostIdentity);
-
-  const isOnline = participant && connectionState === ConnectionState.Connected;
-
-  const isHidden = !isChatEnabled || !isOnline;
-
   const [value, setValue] = useState("");
-  const { chatMessages: messages, send } = useChat();
+
+  const isHidden = !isChatEnabled || !isPublishing;
 
   useEffect(() => {
     if (matches) {
@@ -44,18 +36,18 @@ export const Chat = ({
   }, [matches, onExpand]);
 
   const reversedMessages = useMemo(() => {
-    return messages.sort((a, b) => b.timestamp - a.timestamp);
-  }, [messages]);
-
+    return chatMessages.sort((a, b) => b.timestamp - a.timestamp);
+  }, [chatMessages]);
+  console.log("chatMessages", chatMessages);
   const onSubmit = () => {
-    if (!send) return;
-
-    send(value);
-    setValue("");
+    if (value.trim()) {
+      sendChatMessage(value);
+      setValue("");
+    }
   };
 
-  const onChange = (value) => {
-    setValue(value);
+  const onChange = (newValue) => {
+    setValue(newValue);
   };
 
   return (

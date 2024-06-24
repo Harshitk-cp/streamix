@@ -3,8 +3,11 @@
 import { useSidebar } from "@/store/use-sidebar";
 import React from "react";
 import UserItem, { UserItemSkelton } from "./user-item";
+import { useStreamWebhook } from "@/hooks/use-stream-webhook";
 
 function Recommended({ data }) {
+  useStreamWebhook();
+
   const { collapsed } = useSidebar((state) => state);
   const showLabel = !collapsed && data.length > 0;
 

@@ -14,7 +14,7 @@ export const onFollow = async (id) => {
 
     return followedUser;
   } catch (error) {
-    throw new Error("Internal Erro");
+    throw new Error("Internal Error");
   }
 };
 
@@ -27,6 +27,6 @@ export const onUnfollow = async (id) => {
 
     return unfollowedUser;
   } catch (error) {
-    throw new Error("Internal Erro");
+    throw new Error("Internal Error");
   }
 };

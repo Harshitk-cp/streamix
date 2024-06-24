@@ -17,10 +17,16 @@ export const ChatList = ({ messages, isHidden }) => {
     );
   }
 
+  console.log("chat list: ", messages[0].content);
+
   return (
     <div className="flex flex-1 flex-col-reverse overflow-y-auto p-3 h-full">
       {messages.map((message) => (
-        <ChatMessage key={message.timestamp} data={message} />
+        <ChatMessage
+          key={message.senderID}
+          id={message.senderID}
+          message={message.content}
+        />
       ))}
     </div>
   );

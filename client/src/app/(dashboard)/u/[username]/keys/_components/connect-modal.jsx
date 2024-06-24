@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useTransition } from "react";
-import { IngressInput } from "livekit-server-sdk";
+import React, { useRef, useTransition } from "react";
 import {
   Dialog,
   DialogClose,
@@ -11,27 +10,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-
-const RTMP = String(IngressInput.RTMP_INPUT);
+import { createIngress } from "@/actions/ingress";
 
 function ConnectModel() {
-  const closeRef = null;
+  const closeRef = useRef(null);
   const [isPending, startTransition] = useTransition();
 
   const onSubmit = () => {
     startTransition(() => {
-      createIngress(parseInt(ingressType))
+      createIngress()
         .then(() => {
           toast.success("Connection generated");
-          closeRef?.current?.click();
+          closeRef.current?.click();
         })
         .catch(() => toast.error("Failed to generate connection"));
     });
